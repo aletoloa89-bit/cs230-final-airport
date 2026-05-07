@@ -214,6 +214,23 @@ ax2.set_title(
 
 st.pyplot(fig2)
 st.markdown("---")
+
+# elevation histogram [VIZ3]
+st.header("⛰️ Elevation Distribution")
+
+fig3, ax3 = plt.subplots(figsize=(9, 4))
+ax3.hist(filtered["elevation_ft"].dropna(), bins=40, color="#2c7bb6", edgecolor="white")
+ax3.set_xlabel("Elevation (ft)")
+ax3.set_ylabel("Number of Airports")
+ax3.set_title("Airport Elevation Distribution", fontweight="bold", color="#1a3c5e")
+ax3.spines["top"].set_visible(False)
+ax3.spines["right"].set_visible(False)
+st.pyplot(fig3)
+st.markdown("---")
+
+# data tables
+st.header("📋 Data Table")
+
 # [DA3] Top 10 highest airports
 st.subheader("Top 10 Highest Airports")
 top10 = filtered.nlargest(10, "elevation_ft")[["name", "type", "country_name", "elevation_ft", "iata_code"]]  # [DA3]
