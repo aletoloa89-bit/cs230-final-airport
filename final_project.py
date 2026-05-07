@@ -186,10 +186,16 @@ type_counts = filtered["type"].value_counts()
 total_types = type_counts.sum()
 
 # [PY4] List comprehension for pie chart labels
-labels = [t.replace("_", " ").title() + " (" + str(round(v / total_types * 100, 1)) + "%)"
-          for t, v in type_counts.items()]
+labels = [
+    t.replace("_", " ").title() + " (" +
+    (str(round(v / total_types * 100, 2)) if t == "balloonport"
+     else str(round(v / total_types * 100, 1)))
+    + "%)"
+    for t, v in type_counts.items()
+]
 
 fig2, ax2 = plt.subplots(figsize=(6, 5))
+
 ax2.pie(
     type_counts.values,
     labels=None,
@@ -199,26 +205,15 @@ ax2.pie(
 )
 
 ax2.legend(labels, title="Type", loc="center left", bbox_to_anchor=(1, 0.5), fontsize=9)
-ax2.set_title("Airport Type Distribution", fontweight="bold", color="#1a3c5e")
+
+ax2.set_title(
+    "Airport Type Distribution",
+    fontweight="bold",
+    color="#1a3c5e"
+)
+
 st.pyplot(fig2)
 st.markdown("---")
-
-# elevation histogram [VIZ3]
-st.header("⛰️ Elevation Distribution")
-
-fig3, ax3 = plt.subplots(figsize=(9, 4))
-ax3.hist(filtered["elevation_ft"].dropna(), bins=40, color="#2c7bb6", edgecolor="white")
-ax3.set_xlabel("Elevation (ft)")
-ax3.set_ylabel("Number of Airports")
-ax3.set_title("Airport Elevation Distribution", fontweight="bold", color="#1a3c5e")
-ax3.spines["top"].set_visible(False)
-ax3.spines["right"].set_visible(False)
-st.pyplot(fig3)
-st.markdown("---")
-
-# data tables
-st.header("📋 Data Table")
-
 # [DA3] Top 10 highest airports
 st.subheader("Top 10 Highest Airports")
 top10 = filtered.nlargest(10, "elevation_ft")[["name", "type", "country_name", "elevation_ft", "iata_code"]]  # [DA3]
