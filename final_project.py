@@ -183,19 +183,22 @@ st.markdown("---")
 st.header("🥧 Airport Type Breakdown")
 
 type_counts = filtered["type"].value_counts()
+total_types = type_counts.sum()
 
 # [PY4] List comprehension for pie chart labels
-labels = [t.replace("_", " ").title() for t in type_counts.index]
+labels = [t.replace("_", " ").title() + " (" + str(round(v / total_types * 100, 1)) + "%)"
+          for t, v in type_counts.items()]
 
 fig2, ax2 = plt.subplots(figsize=(6, 5))
 ax2.pie(
     type_counts.values,
-    labels=labels,
-    autopct="%1.1f%%",
+    labels=None,
     colors=["#1a3c5e", "#2c7bb6", "#4dac26", "#fdae61", "#d7191c", "#abd9e9"][:len(type_counts)],
     startangle=140,
     wedgeprops={"edgecolor": "white"}
 )
+
+ax2.legend(labels, title="Type", loc="center left", bbox_to_anchor=(1, 0.5), fontsize=9)
 ax2.set_title("Airport Type Distribution", fontweight="bold", color="#1a3c5e")
 st.pyplot(fig2)
 st.markdown("---")
