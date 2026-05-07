@@ -183,16 +183,19 @@ st.markdown("---")
 st.header("🥧 Airport Type Breakdown")
 
 type_counts = filtered["type"].value_counts()
-total_types = type_counts.sum()
 
-# [PY4] List comprehension for pie chart labels with percentages
-labels = [f"{t.replace('_',' ').title()} ({v/total_types*100:.2f}%)" if t == "balloonport" else f"{t.replace('_',' ').title()} ({v/total_types*100:.1f}%)" for t, v in type_counts.items()]
+# [PY4] List comprehension for pie chart labels
+labels = [t.replace("_", " ").title() for t in type_counts.index]
 
 fig2, ax2 = plt.subplots(figsize=(6, 5))
-ax2.pie(type_counts.values, labels=None,
-        colors=["#1a3c5e","#2c7bb6","#4dac26","#fdae61","#d7191c","#abd9e9"][:len(type_counts)],
-        startangle=140, wedgeprops={"edgecolor": "white"})
-ax2.legend(labels, title="Type", loc="center left", bbox_to_anchor=(1, 0.5), fontsize=9)
+ax2.pie(
+    type_counts.values,
+    labels=labels,
+    autopct="%1.1f%%",
+    colors=["#1a3c5e", "#2c7bb6", "#4dac26", "#fdae61", "#d7191c", "#abd9e9"][:len(type_counts)],
+    startangle=140,
+    wedgeprops={"edgecolor": "white"}
+)
 ax2.set_title("Airport Type Distribution", fontweight="bold", color="#1a3c5e")
 st.pyplot(fig2)
 st.markdown("---")
@@ -217,6 +220,10 @@ st.header("📋 Data Table")
 st.subheader("Top 10 Highest Airports")
 top10 = filtered.nlargest(10, "elevation_ft")[["name", "type", "country_name", "elevation_ft", "iata_code"]]  # [DA3]
 top10.columns = ["Airport", "Type", "Country", "Elevation (ft)", "IATA"]
+
+# [DA9] Add elevation in meters to the top 10 table
+top10["Elev (m)"] = (top10["Elevation (ft)"] * 0.3048).round(1)  # [DA9]
+
 st.dataframe(top10.reset_index(drop=True), use_container_width=True)
 
 # [DA4] Filter: only airports with an IATA code
@@ -229,13 +236,11 @@ st.subheader("High-Altitude Large Airports (≥ 5,000 ft)")
 high_large = filtered[(filtered["type"] == "large_airport") & (filtered["elevation_ft"] >= 5000)]  # [DA5]
 high_large = high_large[["name", "country_name", "elevation_ft", "iata_code"]].sort_values("elevation_ft", ascending=False)
 high_large.columns = ["Airport", "Country", "Elevation (ft)", "IATA"]
+
 if len(high_large) > 0:
     st.dataframe(high_large.reset_index(drop=True), use_container_width=True)
 else:
     st.info("No results with current filters.")
-
-# [DA9] Add elevation in meters to the top 10 table
-top10["Elev (m)"] = (top10["Elevation (ft)"] * 0.3048).round(1)  # [DA9]
 
 st.markdown("---")
 st.caption("✈️ Airport World Explorer | CS 230 Final Project | Data: OurAirports.com")
